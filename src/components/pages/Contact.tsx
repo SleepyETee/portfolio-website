@@ -6,6 +6,7 @@ import emailjs from '@emailjs/browser';
 import { ToastContainer, toast } from 'react-toastify';
 import { useTheme } from '../../styles/ThemeContext';
 import { useGitHub } from '../../hooks/useGitHub';
+import { useSEO } from '../../hooks/useSEO';
 import Particles from '../effects/Particles';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -182,9 +183,37 @@ const SocialLink = styled(motion.a)`
   }
 `;
 
+const HoneypotField = styled.input`
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+`;
+
+const ErrorText = styled.span`
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+`;
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
 const Contact: React.FC = () => {
+  useSEO({
+    title: 'Contact',
+    description: 'Get in touch with Long Nguyen. Send a message or connect via social media for web development inquiries and collaborations.'
+  });
+
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const formRef = useRef<HTMLFormElement>(null);
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const [ref, inView] = useInView({
     threshold: 0.3,
     triggerOnce: true,
@@ -192,17 +221,55 @@ const Contact: React.FC = () => {
   const { theme } = useTheme();
   const { user, loading: githubLoading } = useGitHub();
 
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    const form = formRef.current;
+    if (!form) return false;
+
+    const name = (form.elements.namedItem('user_name') as HTMLInputElement)?.value.trim();
+    const email = (form.elements.namedItem('user_email') as HTMLInputElement)?.value.trim();
+    const message = (form.elements.namedItem('message') as HTMLTextAreaElement)?.value.trim();
+
+    if (!name || name.length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!message || message.length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
 
+    // Honeypot check - if filled, it's a bot
+    if (honeypotRef.current?.value) {
+      toast.success('Message sent successfully!');
+      formRef.current.reset();
+      return;
+    }
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
     setIsLoading(true);
     try {
       await emailjs.sendForm(
-        'service_8bvujav', 
-        'template_bywc8kp',
+        process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_8bvujav', 
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_bywc8kp',
         formRef.current,
-        'YmXUJqXycYKPYUjP9'
+        process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'YmXUJqXycYKPYUjP9'
       );
       toast.success('Message sent successfully!');
       formRef.current.reset();
@@ -277,8 +344,9 @@ const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                aria-label="Visit GitHub profile"
               >
-                <i className="fab fa-github" />
+                <i className="fab fa-github" aria-hidden="true" />
               </SocialLink>
               {user?.twitter_username && (
                 <SocialLink
@@ -287,8 +355,9 @@ const Contact: React.FC = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
+                  aria-label="Visit Twitter profile"
                 >
-                  <i className="fab fa-twitter" />
+                  <i className="fab fa-twitter" aria-hidden="true" />
                 </SocialLink>
               )}
               <SocialLink
@@ -297,8 +366,9 @@ const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                aria-label="Visit LinkedIn profile"
               >
-                <i className="fab fa-linkedin" />
+                <i className="fab fa-linkedin" aria-hidden="true" />
               </SocialLink>
             </SocialLinks>
           </ContactInfo>
@@ -308,6 +378,15 @@ const Contact: React.FC = () => {
             onSubmit={handleSubmit}
             variants={itemVariants}
           >
+            {/* Honeypot field - hidden from users, catches bots */}
+            <HoneypotField
+              ref={honeypotRef}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
             <FormGroup>
               <Label htmlFor="name">Name</Label>
               <Input
@@ -316,7 +395,11 @@ const Contact: React.FC = () => {
                 name="user_name"
                 required
                 disabled={isLoading}
+                minLength={2}
+                placeholder="Your name"
+                onChange={() => setErrors(prev => ({ ...prev, name: undefined }))}
               />
+              {errors.name && <ErrorText>{errors.name}</ErrorText>}
             </FormGroup>
             <FormGroup>
               <Label htmlFor="email">Email</Label>
@@ -326,7 +409,10 @@ const Contact: React.FC = () => {
                 name="user_email"
                 required
                 disabled={isLoading}
+                placeholder="your.email@example.com"
+                onChange={() => setErrors(prev => ({ ...prev, email: undefined }))}
               />
+              {errors.email && <ErrorText>{errors.email}</ErrorText>}
             </FormGroup>
             <FormGroup>
               <Label htmlFor="message">Message</Label>
@@ -335,7 +421,11 @@ const Contact: React.FC = () => {
                 name="message"
                 required
                 disabled={isLoading}
+                minLength={10}
+                placeholder="Your message here..."
+                onChange={() => setErrors(prev => ({ ...prev, message: undefined }))}
               />
+              {errors.message && <ErrorText>{errors.message}</ErrorText>}
             </FormGroup>
             <SubmitButton
               type="submit"

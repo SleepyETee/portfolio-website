@@ -4,6 +4,7 @@ import { motion, useAnimation, Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useNavigate } from 'react-router-dom';
 import { useGitHub } from '../../hooks/useGitHub';
+import { useSEO } from '../../hooks/useSEO';
 
 const HomeContainer = styled.div`
   min-height: 100vh;
@@ -97,6 +98,11 @@ const SecondaryButton = styled(motion.button)`
 `;
 
 const Home: React.FC = () => {
+  useSEO({
+    title: 'Home',
+    description: 'Long Nguyen - Full Stack Developer specializing in React, TypeScript, and Node.js. View my projects and get in touch.'
+  });
+  
   const controls = useAnimation();
   const navigate = useNavigate();
   const [ref, inView] = useInView({

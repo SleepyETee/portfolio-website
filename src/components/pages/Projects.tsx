@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useGitHub } from '../../hooks/useGitHub';
+import { useSEO } from '../../hooks/useSEO';
 import { GitHubRepo } from '../../services/github';
 
 interface Project {
@@ -207,6 +208,11 @@ const ModalDescription = styled.p`
 `;
 
 const Projects: React.FC = () => {
+  useSEO({
+    title: 'Projects',
+    description: 'View my portfolio of web development projects including React applications, TypeScript projects, and full-stack solutions.'
+  });
+
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [ref, inView] = useInView({
@@ -236,12 +242,12 @@ const Projects: React.FC = () => {
     {
       title: "Portfolio Website",
       description: "A modern and responsive portfolio website built with React and TypeScript.",
-      image: "https://via.placeholder.com/300x200",
-      category: "Frontend",
+      image: "https://opengraph.githubassets.com/1/sleepyetee/portfolio-website",
+      category: "TypeScript",
       tags: ["React", "TypeScript", "Styled Components", "Framer Motion"],
-      demoLink: "https://demo.example.com",
-      githubLink: "https://github.com/yourusername/project2",
-      longDescription: "A personal portfolio website showcasing my work and skills. Built with React and TypeScript, featuring smooth animations and responsive design."
+      demoLink: window.location.origin,
+      githubLink: "https://github.com/sleepyetee/portfolio-website",
+      longDescription: "A personal portfolio website showcasing my work and skills. Built with React and TypeScript, featuring smooth animations, theme switching, and responsive design."
     }
   ];
 

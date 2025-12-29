@@ -120,6 +120,25 @@ const PageNavigation: React.FC = () => {
     }
   };
 
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      if (e.key === 'ArrowLeft' && canGoLeft) {
+        goToPreviousPage();
+      } else if (e.key === 'ArrowRight' && canGoRight) {
+        goToNextPage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canGoLeft, canGoRight, currentIndex]);
+
   const buttonVariants = {
     hover: { scale: 1.1 },
     tap: { scale: 0.95 }

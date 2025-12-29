@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion, Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useGitHub } from '../../hooks/useGitHub';
+import { useSEO } from '../../hooks/useSEO';
 
 const AboutContainer = styled.div`
   min-height: 100vh;
@@ -130,6 +131,11 @@ const Description = styled.p`
 `;
 
 const About: React.FC = () => {
+  useSEO({
+    title: 'About',
+    description: 'Learn about Long Nguyen - Full Stack Developer with expertise in React, TypeScript, Node.js, and modern web technologies.'
+  });
+
   const [bioRef, bioInView] = useInView({ threshold: 0.3, triggerOnce: true });
   const [skillsRef, skillsInView] = useInView({ threshold: 0.2, triggerOnce: true });
   const [expRef, expInView] = useInView({ threshold: 0.2, triggerOnce: true });

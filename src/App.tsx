@@ -9,7 +9,10 @@ import Home from './components/pages/Home';
 import About from './components/pages/About';
 import Projects from './components/pages/Projects';
 import Contact from './components/pages/Contact';
+import NotFound from './components/pages/NotFound';
 import ThemeBackground from './components/effects/ThemeBackground';
+import ScrollToTop from './components/ui/ScrollToTop';
+import SkipToContent from './components/ui/SkipToContent';
 import Particles from './components/effects/Particles';
 import PageNavigation from './components/layout/PageNavigation';
 
@@ -155,6 +158,20 @@ const AnimatedRoutes: React.FC = () => {
             </PageWrapper>
           }
         />
+        <Route
+          path="*"
+          element={
+            <PageWrapper
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+            >
+              <NotFound />
+            </PageWrapper>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -166,12 +183,16 @@ const App: React.FC = () => {
       <GlobalStyle />
       <Router>
         <AppContainer>
+          <SkipToContent />
           <CustomCursor />
           <ThemeBackground />
           <Particles />
           <Navbar />
           <PageNavigation />
-          <AnimatedRoutes />
+          <ScrollToTop />
+          <main id="main-content">
+            <AnimatedRoutes />
+          </main>
         </AppContainer>
       </Router>
     </ThemeProvider>

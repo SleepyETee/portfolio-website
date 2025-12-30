@@ -1,10 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { useGitHub } from '../../hooks/useGitHub';
+import { useGitHub, clearGitHubCache } from '../../hooks/useGitHub';
 import { useSEO } from '../../hooks/useSEO';
 import { GitHubRepo } from '../../services/github';
+
+// Pre-populated project descriptions for repos missing them on GitHub
+const projectDescriptions: Record<string, { description: string; longDescription: string; tags: string[] }> = {
+  'Calculators': {
+    description: 'A collection of calculator implementations across multiple programming languages.',
+    longDescription: 'A comprehensive collection of calculator projects demonstrating proficiency in different programming languages including C++, Python, and JavaScript. Each implementation showcases language-specific features and best practices.',
+    tags: ['C++', 'Python', 'JavaScript', 'Algorithms']
+  },
+  'Item-Books': {
+    description: 'A JavaScript-based book inventory management application.',
+    longDescription: 'A full-featured book inventory management system built with JavaScript. Allows users to add, edit, delete, and search for books with an intuitive user interface.',
+    tags: ['JavaScript', 'Web App', 'CRUD']
+  },
+  'Snap-Project-TV-Shows': {
+    description: 'A TV show discovery and tracking application built with JavaScript.',
+    longDescription: 'An interactive web application for discovering and tracking TV shows. Features include browsing popular shows, searching by title, and managing a personal watchlist.',
+    tags: ['JavaScript', 'API Integration', 'Web App']
+  },
+  'Tech-Wizards': {
+    description: 'A collaborative C++ project showcasing advanced programming concepts.',
+    longDescription: 'A team project built with C++ demonstrating object-oriented programming principles, data structures, and algorithm implementation. Features clean code architecture and comprehensive documentation.',
+    tags: ['C++', 'OOP', 'Data Structures']
+  },
+  'SpiderCalc': {
+    description: 'A hackathon project created during HackCC 2025.',
+    longDescription: 'An innovative calculator application developed during HackCC 2025. Built with TypeScript and React, featuring a unique spider-themed interface and advanced calculation capabilities.',
+    tags: ['TypeScript', 'React', 'Hackathon']
+  },
+  'portfolio-website': {
+    description: 'A modern, responsive portfolio website built with React and TypeScript.',
+    longDescription: 'A personal portfolio website showcasing projects and skills. Built with React and TypeScript, featuring smooth Framer Motion animations, dark/light theme switching, GitHub API integration, and fully responsive design.',
+    tags: ['React', 'TypeScript', 'Styled Components', 'Framer Motion']
+  },
+  'BrainXP': {
+    description: 'An interactive learning and brain training application.',
+    longDescription: 'A TypeScript-based application designed to enhance cognitive abilities through interactive exercises and challenges. Features progress tracking and personalized learning paths.',
+    tags: ['TypeScript', 'Education', 'Interactive']
+  }
+};
 
 interface Project {
   title: string;
@@ -63,6 +102,44 @@ const FilterButton = styled(motion.button)<{ $isActive: boolean }>`
     transform: translateY(-2px);
     box-shadow: ${({ theme }) => theme.shadows.medium};
   }
+`;
+
+const RefreshButton = styled(motion.button)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 25px;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.text.light};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 0.85rem;
+  }
+`;
+
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 `;
 
 const ProjectsGrid = styled(motion.div)`
@@ -215,39 +292,117 @@ const Projects: React.FC = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
   });
   const { repos, loading, error } = useGitHub();
 
-  const mapGitHubToProject = (repo: GitHubRepo): Project => ({
-    title: repo.name.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    description: repo.description || 'A GitHub repository project',
-    image: `https://opengraph.githubassets.com/1/${repo.full_name}`,
-    category: repo.language || 'Other',
-    tags: [repo.language, 'GitHub'].filter((tag): tag is string => tag !== null),
-    demoLink: repo.homepage || repo.html_url,
-    githubLink: repo.html_url,
-    longDescription: repo.description || `A project from GitHub repository ${repo.name}. No additional description available.`,
-    stars: repo.stargazers_count,
-    forks: repo.forks_count,
-    language: repo.language,
-    updatedAt: repo.updated_at
-  });
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    clearGitHubCache();
+    setRefreshKey(prev => prev + 1);
+    // Reload the page to fetch fresh data
+    window.location.reload();
+  }, []);
+
+  const mapGitHubToProject = (repo: GitHubRepo): Project => {
+    const prePopulated = projectDescriptions[repo.name];
+    const description = repo.description || prePopulated?.description || 'A GitHub repository project';
+    const longDescription = repo.description || prePopulated?.longDescription || `A project from GitHub repository ${repo.name}.`;
+    const baseTags = [repo.language].filter((tag): tag is string => tag !== null);
+    const tags = prePopulated?.tags || [...baseTags, 'GitHub'];
+
+    return {
+      title: repo.name.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      description,
+      image: `https://opengraph.githubassets.com/1/${repo.full_name}`,
+      category: repo.language || 'Other',
+      tags,
+      demoLink: repo.homepage || repo.html_url,
+      githubLink: repo.html_url,
+      longDescription,
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      language: repo.language,
+      updatedAt: repo.updated_at
+    };
+  };
 
   const projects: Project[] = repos.map(mapGitHubToProject);
   
   const fallbackProjects: Project[] = [
     {
       title: "Portfolio Website",
-      description: "A modern and responsive portfolio website built with React and TypeScript.",
+      description: projectDescriptions['portfolio-website'].description,
       image: "https://opengraph.githubassets.com/1/sleepyetee/portfolio-website",
       category: "TypeScript",
-      tags: ["React", "TypeScript", "Styled Components", "Framer Motion"],
+      tags: projectDescriptions['portfolio-website'].tags,
       demoLink: window.location.origin,
       githubLink: "https://github.com/sleepyetee/portfolio-website",
-      longDescription: "A personal portfolio website showcasing my work and skills. Built with React and TypeScript, featuring smooth animations, theme switching, and responsive design."
+      longDescription: projectDescriptions['portfolio-website'].longDescription
+    },
+    {
+      title: "Calculators",
+      description: projectDescriptions['Calculators'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/Calculators",
+      category: "C++",
+      tags: projectDescriptions['Calculators'].tags,
+      demoLink: "https://github.com/sleepyetee/Calculators",
+      githubLink: "https://github.com/sleepyetee/Calculators",
+      longDescription: projectDescriptions['Calculators'].longDescription
+    },
+    {
+      title: "SpiderCalc",
+      description: projectDescriptions['SpiderCalc'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/SpiderCalc",
+      category: "TypeScript",
+      tags: projectDescriptions['SpiderCalc'].tags,
+      demoLink: "https://github.com/sleepyetee/SpiderCalc",
+      githubLink: "https://github.com/sleepyetee/SpiderCalc",
+      longDescription: projectDescriptions['SpiderCalc'].longDescription
+    },
+    {
+      title: "BrainXP",
+      description: projectDescriptions['BrainXP'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/BrainXP",
+      category: "TypeScript",
+      tags: projectDescriptions['BrainXP'].tags,
+      demoLink: "https://github.com/sleepyetee/BrainXP",
+      githubLink: "https://github.com/sleepyetee/BrainXP",
+      longDescription: projectDescriptions['BrainXP'].longDescription
+    },
+    {
+      title: "Item Books",
+      description: projectDescriptions['Item-Books'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/Item-Books",
+      category: "JavaScript",
+      tags: projectDescriptions['Item-Books'].tags,
+      demoLink: "https://github.com/sleepyetee/Item-Books",
+      githubLink: "https://github.com/sleepyetee/Item-Books",
+      longDescription: projectDescriptions['Item-Books'].longDescription
+    },
+    {
+      title: "Tech Wizards",
+      description: projectDescriptions['Tech-Wizards'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/Tech-Wizards",
+      category: "C++",
+      tags: projectDescriptions['Tech-Wizards'].tags,
+      demoLink: "https://github.com/sleepyetee/Tech-Wizards",
+      githubLink: "https://github.com/sleepyetee/Tech-Wizards",
+      longDescription: projectDescriptions['Tech-Wizards'].longDescription
+    },
+    {
+      title: "Snap Project TV Shows",
+      description: projectDescriptions['Snap-Project-TV-Shows'].description,
+      image: "https://opengraph.githubassets.com/1/sleepyetee/Snap-Project-TV-Shows",
+      category: "JavaScript",
+      tags: projectDescriptions['Snap-Project-TV-Shows'].tags,
+      demoLink: "https://github.com/sleepyetee/Snap-Project-TV-Shows",
+      githubLink: "https://github.com/sleepyetee/Snap-Project-TV-Shows",
+      longDescription: projectDescriptions['Snap-Project-TV-Shows'].longDescription
     }
   ];
 
@@ -283,13 +438,28 @@ const Projects: React.FC = () => {
 
   return (
     <ProjectsContainer>
-      <SectionTitle
-        initial={{ opacity: 0, y: -20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
-      >
-        {loading ? 'Loading Projects...' : error ? 'Unable to load projects' : 'My Projects'}
-      </SectionTitle>
+      <HeaderRow>
+        <SectionTitle
+          initial={{ opacity: 0, y: -20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          style={{ marginBottom: 0 }}
+        >
+          {loading ? 'Loading Projects...' : error ? 'Unable to load projects' : 'My Projects'}
+        </SectionTitle>
+        {!loading && (
+          <RefreshButton
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Refresh projects from GitHub"
+          >
+            <i className={`fas fa-sync-alt ${isRefreshing ? 'fa-spin' : ''}`} aria-hidden="true" />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </RefreshButton>
+        )}
+      </HeaderRow>
 
       {!loading && !error && displayProjects.length > 0 && (
         <FilterContainer

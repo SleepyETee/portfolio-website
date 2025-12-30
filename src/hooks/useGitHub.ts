@@ -17,6 +17,14 @@ interface CachedData {
 const CACHE_KEY = 'github_data_cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
+export const clearGitHubCache = (username: string = 'sleepyetee'): void => {
+  try {
+    localStorage.removeItem(`${CACHE_KEY}_${username}`);
+  } catch {
+    // Silently fail if localStorage is not available
+  }
+};
+
 const getCache = (username: string): CachedData | null => {
   try {
     const cached = localStorage.getItem(`${CACHE_KEY}_${username}`);

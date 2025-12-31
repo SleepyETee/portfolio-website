@@ -1,6 +1,6 @@
 # Long Nguyen - Portfolio Website
 
-🌐 **Live Demo:** [portfolio-website-beta-ten-31.vercel.app](https://portfolio-website-beta-ten-31.vercel.app/)
+🌐 **Live Demo:** [longnguyen.vercel.app]([https://portfolio-website-beta-ten-31.vercel.app/](https://longnguyen.vercel.app/))
 
 A modern, responsive portfolio website built with React, TypeScript, and Styled Components. Features smooth animations, dark/light theme toggle, and GitHub integration.
 

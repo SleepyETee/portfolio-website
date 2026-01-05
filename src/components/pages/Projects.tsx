@@ -340,7 +340,7 @@ const Projects: React.FC = () => {
       image: "https://opengraph.githubassets.com/1/sleepyetee/portfolio-website",
       category: "TypeScript",
       tags: projectDescriptions['portfolio-website'].tags,
-      demoLink: window.location.origin,
+      demoLink: "https://sleepyetee.github.io/portfolio-website",
       githubLink: "https://github.com/sleepyetee/portfolio-website",
       longDescription: projectDescriptions['portfolio-website'].longDescription
     },
@@ -350,7 +350,7 @@ const Projects: React.FC = () => {
       image: "https://opengraph.githubassets.com/1/sleepyetee/Calculators",
       category: "C++",
       tags: projectDescriptions['Calculators'].tags,
-      demoLink: "https://github.com/sleepyetee/Calculators",
+      demoLink: "https://sleepyetee.github.io/Calculators",
       githubLink: "https://github.com/sleepyetee/Calculators",
       longDescription: projectDescriptions['Calculators'].longDescription
     },
@@ -360,7 +360,7 @@ const Projects: React.FC = () => {
       image: "https://opengraph.githubassets.com/1/sleepyetee/SpiderCalc",
       category: "TypeScript",
       tags: projectDescriptions['SpiderCalc'].tags,
-      demoLink: "https://github.com/sleepyetee/SpiderCalc",
+      demoLink: "https://sleepyetee.github.io/SpiderCalc",
       githubLink: "https://github.com/sleepyetee/SpiderCalc",
       longDescription: projectDescriptions['SpiderCalc'].longDescription
     },
@@ -400,7 +400,7 @@ const Projects: React.FC = () => {
       image: "https://opengraph.githubassets.com/1/sleepyetee/Snap-Project-TV-Shows",
       category: "JavaScript",
       tags: projectDescriptions['Snap-Project-TV-Shows'].tags,
-      demoLink: "https://github.com/sleepyetee/Snap-Project-TV-Shows",
+      demoLink: "https://sleepyetee.github.io/Snap-Project-TV-Shows",
       githubLink: "https://github.com/sleepyetee/Snap-Project-TV-Shows",
       longDescription: projectDescriptions['Snap-Project-TV-Shows'].longDescription
     }

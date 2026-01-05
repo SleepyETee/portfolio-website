@@ -22,6 +22,19 @@ const ContentWrapper = styled(motion.div)`
   width: 100%;
   z-index: 2;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ProfileImage = styled(motion.img)`
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  border: 4px solid ${({ theme }) => theme.colors.primary};
+  box-shadow: ${({ theme }) => theme.shadows.medium};
 `;
 
 const Title = styled(motion.h1)`
@@ -145,6 +158,12 @@ const Home: React.FC = () => {
         animate={controls}
         variants={containerVariants}
       >
+        <ProfileImage
+          src={`${process.env.PUBLIC_URL}/a-10.jpg`}
+          alt="Long Nguyen"
+          variants={containerVariants}
+          whileHover={{ scale: 1.05 }}
+        />
         <Title variants={containerVariants}>
           {loading ? 'Welcome' : `Hi, I'm ${user?.name || 'Long Nguyen'}`}
         </Title>

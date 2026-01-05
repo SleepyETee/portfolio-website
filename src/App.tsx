@@ -181,7 +181,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <GlobalStyle />
-      <Router>
+      <Router basename="/portfolio-website">
         <AppContainer>
           <SkipToContent />
           <CustomCursor />

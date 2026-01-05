@@ -133,7 +133,7 @@ const Description = styled.p`
 const About: React.FC = () => {
   useSEO({
     title: 'About',
-    description: 'Learn about Long Nguyen - Full Stack Developer with expertise in React, TypeScript, Node.js, and modern web technologies.'
+    description: 'Learn about Long Nguyen - Aspiring Full Stack Developer learning React, TypeScript, Node.js, and modern web technologies.'
   });
 
   const [bioRef, bioInView] = useInView({ threshold: 0.3, triggerOnce: true });
@@ -144,55 +144,55 @@ const About: React.FC = () => {
   // Professional information - Update these with your LinkedIn details
   const profileInfo = {
     name: "Long Nguyen",
-    headline: "Full Stack Developer | React & TypeScript Specialist",
-    location: user?.location || "Vietnam",
-    summary: `Passionate software developer with expertise in building modern web applications. 
-    Focused on creating clean, efficient, and scalable solutions using cutting-edge technologies. 
-    Strong problem-solving skills and a commitment to continuous learning.`
+    headline: "Aspiring Full Stack Developer | Learning React & TypeScript",
+    location: user?.location || "United States",
+    summary: `I'm an enthusiastic and self-motivated developer currently learning to build modern web applications. 
+    I'm passionate about coding and constantly working to improve my skills in frontend and backend technologies. 
+    Always eager to learn new things and take on challenging projects to grow as a developer.`
   };
 
   const skills = {
     "Programming Languages": [
-      { name: "JavaScript/TypeScript", level: 90 },
-      { name: "Python", level: 80 },
-      { name: "HTML/CSS", level: 95 },
-      { name: "SQL", level: 75 }
+      { name: "JavaScript/TypeScript", level: 45 },
+      { name: "Python", level: 35 },
+      { name: "HTML/CSS", level: 55 },
+      { name: "SQL", level: 30 }
     ],
     "Frameworks & Libraries": [
-      { name: "React.js", level: 90 },
-      { name: "Node.js", level: 85 },
-      { name: "Express.js", level: 80 },
-      { name: "Next.js", level: 75 }
+      { name: "React.js", level: 40 },
+      { name: "Node.js", level: 35 },
+      { name: "Express.js", level: 30 },
+      { name: "Next.js", level: 25 }
     ],
     "Tools & Platforms": [
-      { name: "Git/GitHub", level: 90 },
-      { name: "VS Code", level: 95 },
-      { name: "Docker", level: 70 },
-      { name: "AWS/Cloud", level: 65 }
+      { name: "Git/GitHub", level: 45 },
+      { name: "VS Code", level: 60 },
+      { name: "Docker", level: 20 },
+      { name: "AWS/Cloud", level: 15 }
     ]
   };
 
   const experiences = [
     {
-      title: "Software Developer",
-      company: "Freelance / Personal Projects",
-      date: "2023 - Present",
-      description: "Building full-stack web applications using React, TypeScript, and Node.js. Developing responsive and accessible user interfaces with modern design principles."
+      title: "Self-Taught Developer",
+      company: "Personal Projects",
+      date: "2024 - Present",
+      description: "Learning full-stack web development by building personal projects using React, TypeScript, and Node.js. Exploring responsive design and modern development practices."
     },
     {
-      title: "Web Development Student",
-      company: "Self-taught & Online Courses",
-      date: "2022 - 2023",
-      description: "Completed comprehensive web development curriculum including frontend technologies, backend development, databases, and deployment strategies."
+      title: "Web Development Learner",
+      company: "Online Courses & Tutorials",
+      date: "2023 - 2024",
+      description: "Studying web development fundamentals through online resources, tutorials, and hands-on practice projects."
     }
   ];
 
   const education = [
     {
-      degree: "Computer Science / Software Engineering",
-      institution: "University",
-      date: "Expected Graduation",
-      description: "Studying software development, algorithms, data structures, and computer systems."
+      degree: "Bachelor of Science in Computer Science",
+      institution: "California State University, Fullerton",
+      date: "Expected Graduation: Spring 2028",
+      description: "Learning software development fundamentals, algorithms, data structures, and computer systems."
     }
   ];
 

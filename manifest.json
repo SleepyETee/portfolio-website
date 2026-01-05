@@ -1,0 +1,15 @@
+{
+  "short_name": "Long Nguyen",
+  "name": "Long Nguyen - Full Stack Developer Portfolio",
+  "icons": [
+    {
+      "src": "Logo3.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#9DB4C0",
+  "background_color": "#F8F6F7"
+}

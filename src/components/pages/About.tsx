@@ -136,9 +136,9 @@ const About: React.FC = () => {
     description: 'Learn about Long Nguyen - Aspiring Full Stack Developer learning React, TypeScript, Node.js, and modern web technologies.'
   });
 
-  const [bioRef, bioInView] = useInView({ threshold: 0.3, triggerOnce: true });
-  const [skillsRef, skillsInView] = useInView({ threshold: 0.2, triggerOnce: true });
-  const [expRef, expInView] = useInView({ threshold: 0.2, triggerOnce: true });
+  const [bioRef, bioInView] = useInView({ threshold: 0.1, triggerOnce: true });
+  const [skillsRef, skillsInView] = useInView({ threshold: 0.1, triggerOnce: true });
+  const [expRef, expInView] = useInView({ threshold: 0.1, triggerOnce: true });
   const { user, loading } = useGitHub();
 
   // Professional information - Update these with your LinkedIn details

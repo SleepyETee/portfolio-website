@@ -119,16 +119,15 @@ const Home: React.FC = () => {
   const controls = useAnimation();
   const navigate = useNavigate();
   const [ref, inView] = useInView({
-    threshold: 0.3,
+    threshold: 0.1,
     triggerOnce: true,
   });
   const { user, loading } = useGitHub();
 
   useEffect(() => {
-    if (inView) {
-      controls.start('visible');
-    }
-  }, [controls, inView]);
+    // Start animation immediately or when in view
+    controls.start('visible');
+  }, [controls]);
 
   const handleViewProjects = () => {
     navigate('/projects');
